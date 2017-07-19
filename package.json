@@ -1,6 +1,6 @@
 {
   "name": "homebridge-plantower",
-  "version": "0.0.5",
+  "version": "0.0.2",
   "readme": "README.md",
   "description": "plantower plugin for homebridge: https://github.com/nfarina/homebridge",
   "license": "ISC",

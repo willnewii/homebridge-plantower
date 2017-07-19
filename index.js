@@ -36,17 +36,18 @@ function homebridgePlantower(log, config, api) {
     this.temperature = 0;
     this.pm2_5 = 0;
 
-    this.humidityService = new Service.HumiditySensor(this.name)
-    this.temperatureService = new Service.TemperatureSensor(this.name)
-    this.airQualitySensor2_5 = new Service.AirQualitySensor("PM2 5(美标)")
+    this.airQualitySensor2_5 = new Service.AirQualitySensor(this.name)
+    this.humidityService = new Service.HumiditySensor("湿度")
+    this.temperatureService = new Service.TemperatureSensor("温度")
 
-/*    this.humidityService
-        .getCharacteristic(Characteristic.CurrentRelativeHumidity)
-        .on('get', this.getValue.bind(this, 'humidity'))
 
-    this.temperatureService
-        .getCharacteristic(Characteristic.CurrentTemperature)
-        .on('get', this.getValue.bind(this, 'temperature'))*/
+    /*    this.humidityService
+            .getCharacteristic(Characteristic.CurrentRelativeHumidity)
+            .on('get', this.getValue.bind(this, 'humidity'))
+
+        this.temperatureService
+            .getCharacteristic(Characteristic.CurrentTemperature)
+            .on('get', this.getValue.bind(this, 'temperature'))*/
 
     this.plantower = new Plantower(this.model, this.device);
     setInterval(() => {
@@ -58,15 +59,13 @@ function homebridgePlantower(log, config, api) {
             this.temperatureService
                 .setCharacteristic(Characteristic.CurrentTemperature, this.temperature)
 
-          //  console.log(60, this.airQualitySensor2_5.getCharacteristic(Characteristic.PM2_5Density));
+            var value = parseInt(this.pm2_5 / 50)
 
-/*            this.airQualitySensor2_5
-                .setCharacteristic(Characteristic.AirQuality, 1)*/
-            this.log(this.pm2_5)
-            var value = parseInt(this.pm2_5/50)
-
+            if (value == 0) {
+                value = 1;
+            }
             this.airQualitySensor2_5
-                .setCharacteristic(Characteristic.AirQuality, value >=5 ? 5 : value)
+                .setCharacteristic(Characteristic.AirQuality, value >= 5 ? 5 : value)
 
         });
     }, 5000);
@@ -74,7 +73,6 @@ function homebridgePlantower(log, config, api) {
 
 homebridgePlantower.prototype.getValue = function(what, callback) {
     this.plantower.read().then(data => {
-        //this.log(data)
         this.humidity = data['humidity'].value;
         this.temperature = data['temperature'].value;
         this.pm2_5 = data['concentration_pm2.5_normal'].value;
